@@ -2,8 +2,21 @@
 #include <iostream>
 
 TicTacToe::TicTacToe() {
-    board = {'1','2','3','4','5','6','7','8','9'};
-    currentPlayer = 'X';
+    board = {"1","2","3","4","5","6","7","8","9"};
+
+    player1Symbol = "X";
+    player2Symbol = "O";
+    currentPlayer = player1Symbol;
+
+    player1Wins = 0;
+    player2Wins = 0;
+    draws = 0;
+}
+
+void TicTacToe::setPlayerSymbols(const std::string& p1, const std::string& p2) {
+    player1Symbol = p1;
+    player2Symbol = p2;
+    currentPlayer = player1Symbol;
 }
 
 void TicTacToe::printBoard() const {
@@ -18,7 +31,7 @@ void TicTacToe::printBoard() const {
 bool TicTacToe::makeMove(int position) {
     if (position < 1 || position > 9) return false;
 
-    if (board[position - 1] == 'X' || board[position - 1] == 'O')
+    if (board[position - 1] == player1Symbol || board[position - 1] == player2Symbol)
         return false;
 
     board[position - 1] = currentPlayer;
@@ -42,22 +55,50 @@ bool TicTacToe::checkWin() const {
 }
 
 bool TicTacToe::checkDraw() const {
-    for (char c : board) {
-        if (c != 'X' && c != 'O')
+    for (const auto& c : board) {
+        if (c != player1Symbol && c != player2Symbol)
             return false;
     }
     return true;
 }
 
 void TicTacToe::switchPlayer() {
-    currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+    currentPlayer =
+        (currentPlayer == player1Symbol) ? player2Symbol : player1Symbol;
 }
 
-char TicTacToe::getCurrentPlayer() const {
+std::string TicTacToe::getCurrentPlayer() const {
     return currentPlayer;
 }
 
 void TicTacToe::resetGame() {
-    board = {'1','2','3','4','5','6','7','8','9'};
-    currentPlayer = 'X';
+    board = {"1","2","3","4","5","6","7","8","9"};
+    currentPlayer = player1Symbol;
+}
+
+// =====================
+// 🏆 SCOREBOARD FIX
+// =====================
+
+void TicTacToe::addWin() {
+    if (currentPlayer == player1Symbol)
+        player1Wins++;
+    else
+        player2Wins++;
+}
+
+void TicTacToe::addDraw() {
+    draws++;
+}
+
+int TicTacToe::getPlayer1Wins() const {
+    return player1Wins;
+}
+
+int TicTacToe::getPlayer2Wins() const {
+    return player2Wins;
+}
+
+int TicTacToe::getDraws() const {
+    return draws;
 }
