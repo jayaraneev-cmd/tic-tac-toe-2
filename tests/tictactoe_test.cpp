@@ -1,4 +1,4 @@
-#include "tictactoe.hpp"
+#include "../src/tictactoe.hpp"
 #include <cassert>
 #include <iostream>
 
