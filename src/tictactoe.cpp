@@ -1,37 +1,74 @@
 #include "tictactoe.hpp"
 #include <iostream>
 
-TicTacToe::TicTacToe() {
-    board = {"1","2","3","4","5","6","7","8","9"};
+TicTacToe::TicTacToe(int size) {
+
+    boardSize = size;
+
+    for (int i = 1; i <= boardSize * boardSize; i++) {
+        board.push_back(std::to_string(i));
+    }
 
     player1Symbol = "X";
     player2Symbol = "O";
     currentPlayer = player1Symbol;
-
-    player1Wins = 0;
-    player2Wins = 0;
-    draws = 0;
 }
 
-void TicTacToe::setPlayerSymbols(const std::string& p1, const std::string& p2) {
+void TicTacToe::setPlayerSymbols(const std::string& p1,
+                                  const std::string& p2) {
+
     player1Symbol = p1;
     player2Symbol = p2;
     currentPlayer = player1Symbol;
 }
 
 void TicTacToe::printBoard() const {
+
     std::cout << "\n";
-    std::cout << "  " << board[0] << "  |  " << board[1] << "  |  " << board[2] << "\n";
-    std::cout << "-----+-----+-----\n";
-    std::cout << "  " << board[3] << "  |  " << board[4] << "  |  " << board[5] << "\n";
-    std::cout << "-----+-----+-----\n";
-    std::cout << "  " << board[6] << "  |  " << board[7] << "  |  " << board[8] << "\n\n";
+
+    for (int row = 0; row < boardSize; row++) {
+
+        for (int col = 0; col < boardSize; col++) {
+
+            int index = row * boardSize + col;
+
+            std::cout << " ";
+
+            if (board[index].length() == 1)
+                std::cout << " ";
+
+            std::cout << board[index] << " ";
+
+            if (col < boardSize - 1)
+                std::cout << "|";
+        }
+
+        std::cout << "\n";
+
+        if (row < boardSize - 1) {
+
+            for (int i = 0; i < boardSize; i++) {
+
+                std::cout << "-----";
+
+                if (i < boardSize - 1)
+                    std::cout << "+";
+            }
+
+            std::cout << "\n";
+        }
+    }
+
+    std::cout << "\n";
 }
 
 bool TicTacToe::makeMove(int position) {
-    if (position < 1 || position > 9) return false;
 
-    if (board[position - 1] == player1Symbol || board[position - 1] == player2Symbol)
+    if (position < 1 || position > boardSize * boardSize)
+        return false;
+
+    if (board[position - 1] == player1Symbol ||
+        board[position - 1] == player2Symbol)
         return false;
 
     board[position - 1] = currentPlayer;
@@ -39,32 +76,83 @@ bool TicTacToe::makeMove(int position) {
 }
 
 bool TicTacToe::checkWin() const {
-    const int wins[8][3] = {
-        {0,1,2},{3,4,5},{6,7,8},
-        {0,3,6},{1,4,7},{2,5,8},
-        {0,4,8},{2,4,6}
-    };
 
-    for (auto &w : wins) {
-        if (board[w[0]] == currentPlayer &&
-            board[w[1]] == currentPlayer &&
-            board[w[2]] == currentPlayer)
-            return true;
+    // ROWS
+    for (int r = 0; r < boardSize; r++) {
+
+        bool win = true;
+
+        for (int c = 0; c < boardSize; c++) {
+
+            if (board[r * boardSize + c] != currentPlayer) {
+                win = false;
+                break;
+            }
+        }
+
+        if (win) return true;
     }
-    return false;
+
+    // COLUMNS
+    for (int c = 0; c < boardSize; c++) {
+
+        bool win = true;
+
+        for (int r = 0; r < boardSize; r++) {
+
+            if (board[r * boardSize + c] != currentPlayer) {
+                win = false;
+                break;
+            }
+        }
+
+        if (win) return true;
+    }
+
+    // DIAGONAL 1
+    bool win = true;
+
+    for (int i = 0; i < boardSize; i++) {
+
+        if (board[i * boardSize + i] != currentPlayer) {
+            win = false;
+            break;
+        }
+    }
+
+    if (win) return true;
+
+    // DIAGONAL 2
+    win = true;
+
+    for (int i = 0; i < boardSize; i++) {
+
+        if (board[i * boardSize + (boardSize - 1 - i)] != currentPlayer) {
+            win = false;
+            break;
+        }
+    }
+
+    return win;
 }
 
 bool TicTacToe::checkDraw() const {
-    for (const auto& c : board) {
-        if (c != player1Symbol && c != player2Symbol)
+
+    for (auto &cell : board) {
+        if (cell != player1Symbol &&
+            cell != player2Symbol)
             return false;
     }
+
     return true;
 }
 
 void TicTacToe::switchPlayer() {
+
     currentPlayer =
-        (currentPlayer == player1Symbol) ? player2Symbol : player1Symbol;
+        (currentPlayer == player1Symbol)
+        ? player2Symbol
+        : player1Symbol;
 }
 
 std::string TicTacToe::getCurrentPlayer() const {
@@ -72,33 +160,12 @@ std::string TicTacToe::getCurrentPlayer() const {
 }
 
 void TicTacToe::resetGame() {
-    board = {"1","2","3","4","5","6","7","8","9"};
+
+    board.clear();
+
+    for (int i = 1; i <= boardSize * boardSize; i++) {
+        board.push_back(std::to_string(i));
+    }
+
     currentPlayer = player1Symbol;
-}
-
-// =====================
-// 🏆 SCOREBOARD FIX
-// =====================
-
-void TicTacToe::addWin() {
-    if (currentPlayer == player1Symbol)
-        player1Wins++;
-    else
-        player2Wins++;
-}
-
-void TicTacToe::addDraw() {
-    draws++;
-}
-
-int TicTacToe::getPlayer1Wins() const {
-    return player1Wins;
-}
-
-int TicTacToe::getPlayer2Wins() const {
-    return player2Wins;
-}
-
-int TicTacToe::getDraws() const {
-    return draws;
 }

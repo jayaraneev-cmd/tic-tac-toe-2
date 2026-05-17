@@ -7,17 +7,14 @@
 class TicTacToe {
 private:
     std::vector<std::string> board;
+    int boardSize;
 
     std::string currentPlayer;
     std::string player1Symbol;
     std::string player2Symbol;
 
-    int player1Wins;
-    int player2Wins;
-    int draws;
-
 public:
-    TicTacToe();
+    TicTacToe(int size = 3);
 
     void printBoard() const;
     bool makeMove(int position);
@@ -28,13 +25,6 @@ public:
     void resetGame();
 
     void setPlayerSymbols(const std::string& p1, const std::string& p2);
-
-    void addWin();
-    void addDraw();
-
-    int getPlayer1Wins() const;
-    int getPlayer2Wins() const;
-    int getDraws() const;
 };
 
 #endif

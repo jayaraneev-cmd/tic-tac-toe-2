@@ -1,101 +1,71 @@
 #include "tictactoe.hpp"
+#include <cassert>
 #include <iostream>
 
-TicTacToe::TicTacToe() {
-    board = {"1","2","3","4","5","6","7","8","9"};
+int main() {
 
-    player1Symbol = "X";
-    player2Symbol = "O";
-    currentPlayer = player1Symbol;
+    // TEST GAME CREATION
+    TicTacToe game;
 
-    player1Wins = 0;
-    player2Wins = 0;
-    draws = 0;
-}
+    // TEST VALID MOVE
+    assert(game.makeMove(1) == true);
 
-void TicTacToe::setPlayerSymbols(const std::string& p1, const std::string& p2) {
-    player1Symbol = p1;
-    player2Symbol = p2;
-    currentPlayer = player1Symbol;
-}
+    // TEST SAME SPOT INVALID
+    assert(game.makeMove(1) == false);
 
-void TicTacToe::printBoard() const {
-    std::cout << "\n";
-    std::cout << "  " << board[0] << "  |  " << board[1] << "  |  " << board[2] << "\n";
-    std::cout << "-----+-----+-----\n";
-    std::cout << "  " << board[3] << "  |  " << board[4] << "  |  " << board[5] << "\n";
-    std::cout << "-----+-----+-----\n";
-    std::cout << "  " << board[6] << "  |  " << board[7] << "  |  " << board[8] << "\n\n";
-}
+    // TEST INVALID POSITION
+    assert(game.makeMove(10) == false);
 
-bool TicTacToe::makeMove(int position) {
-    if (position < 1 || position > 9) return false;
+    // TEST PLAYER SWITCH
+    std::string firstPlayer = game.getCurrentPlayer();
 
-    if (board[position - 1] == player1Symbol || board[position - 1] == player2Symbol)
-        return false;
+    game.switchPlayer();
 
-    board[position - 1] = currentPlayer;
-    return true;
-}
+    std::string secondPlayer = game.getCurrentPlayer();
 
-bool TicTacToe::checkWin() const {
-    const int wins[8][3] = {
-        {0,1,2},{3,4,5},{6,7,8},
-        {0,3,6},{1,4,7},{2,5,8},
-        {0,4,8},{2,4,6}
-    };
+    assert(firstPlayer != secondPlayer);
 
-    for (auto &w : wins) {
-        if (board[w[0]] == currentPlayer &&
-            board[w[1]] == currentPlayer &&
-            board[w[2]] == currentPlayer)
-            return true;
-    }
-    return false;
-}
+    // TEST WIN
+    TicTacToe winGame;
 
-bool TicTacToe::checkDraw() const {
-    for (const auto& c : board) {
-        if (c != player1Symbol && c != player2Symbol)
-            return false;
-    }
-    return true;
-}
+    winGame.makeMove(1);
+    winGame.makeMove(2);
+    winGame.makeMove(3);
 
-void TicTacToe::switchPlayer() {
-    currentPlayer =
-        (currentPlayer == player1Symbol) ? player2Symbol : player1Symbol;
-}
+    assert(winGame.checkWin() == true);
 
-std::string TicTacToe::getCurrentPlayer() const {
-    return currentPlayer;
-}
+    // TEST DRAW
+    TicTacToe drawGame;
 
-void TicTacToe::resetGame() {
-    board = {"1","2","3","4","5","6","7","8","9"};
-    currentPlayer = player1Symbol;
-}
+    drawGame.makeMove(1);
+    drawGame.switchPlayer();
 
-// 🏆 SCOREBOARD LOGIC
-void TicTacToe::addWin() {
-    if (currentPlayer == player1Symbol)
-        player1Wins++;
-    else
-        player2Wins++;
-}
+    drawGame.makeMove(2);
+    drawGame.switchPlayer();
 
-void TicTacToe::addDraw() {
-    draws++;
-}
+    drawGame.makeMove(3);
+    drawGame.switchPlayer();
 
-int TicTacToe::getPlayer1Wins() const {
-    return player1Wins;
-}
+    drawGame.makeMove(5);
+    drawGame.switchPlayer();
 
-int TicTacToe::getPlayer2Wins() const {
-    return player2Wins;
-}
+    drawGame.makeMove(4);
+    drawGame.switchPlayer();
 
-int TicTacToe::getDraws() const {
-    return draws;
+    drawGame.makeMove(6);
+    drawGame.switchPlayer();
+
+    drawGame.makeMove(8);
+    drawGame.switchPlayer();
+
+    drawGame.makeMove(7);
+    drawGame.switchPlayer();
+
+    drawGame.makeMove(9);
+
+    assert(drawGame.checkDraw() == true);
+
+    std::cout << "All tests passed!\n";
+
+    return 0;
 }
